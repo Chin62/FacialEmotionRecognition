@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "996059460488",
+    "project_id": "facial-emotion-recognit-hzywnr",
+    "storage_bucket": "facial-emotion-recognit-hzywnr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996059460488:android:89fdfc33812775726d803d",
+        "android_client_info": {
+          "package_name": "com.mycompany.facialemotionrecognition"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmXXz5tR89T5bbvfigsCGbO1o4SUnNHpY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
