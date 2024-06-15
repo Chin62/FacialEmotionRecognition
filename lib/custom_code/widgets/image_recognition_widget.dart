@@ -15,7 +15,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_downloader/image_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tflite/tflite.dart';
-import 'package:flutter/widgets.dart';
 
 class ImageRecognitionWidget extends StatefulWidget {
   const ImageRecognitionWidget({
@@ -110,7 +109,7 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
       // Draw the recognition results
       final textPainter = TextPainter(
         textAlign: TextAlign.left,
-        textDirection: TextDirection.ltr, // Correct TextDirection
+        textDirection: null, // Set textDirection to null
       );
 
       final textStyle = TextStyle(
