@@ -115,14 +115,12 @@ class _EmotionDetectionWidgetState extends State<EmotionDetectionWidget> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: SizedBox(
-                        width: 300.0,
-                        height: 200.0,
-                        child: custom_widgets.ImageRecognitionWidget(
-                          width: 300.0,
-                          height: 200.0,
-                        ),
+                    SizedBox(
+                      width: 350.0,
+                      height: 250.0,
+                      child: custom_widgets.ImageRecognitionWidget(
+                        width: 350.0,
+                        height: 250.0,
                       ),
                     ),
                   ],

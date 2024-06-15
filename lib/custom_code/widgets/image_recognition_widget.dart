@@ -9,11 +9,13 @@ import 'package:flutter/material.dart';
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_downloader/image_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tflite/tflite.dart';
+import 'package:flutter/widgets.dart';
 
 class ImageRecognitionWidget extends StatefulWidget {
   const ImageRecognitionWidget({
@@ -43,38 +45,38 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
     loadModel();
   }
 
-  Future loadModel() async {
+  Future<void> loadModel() async {
     Tflite.close();
     try {
       String? res = await Tflite.loadModel(
         model: "assets/fyp.tflite",
-        labels: "assets/label.txt",
+        labels: "assets/labels.txt",
       );
-      print("Load model: " + res!);
+      print("Load model: $res");
     } catch (e) {
-      print('Failed to load model: ' + e.toString());
+      print('Failed to load model: $e');
     }
   }
 
-  Future grabImage() async {
+  Future<void> grabImage() async {
     try {
       String? imageID = await ImageDownloader.downloadImage(_imageURL!);
       if (imageID == null) return;
 
       String? path = await ImageDownloader.findPath(imageID);
-      print('Saved new image: ' + path!);
+      print('Saved new image: $path');
 
       setState(() {
-        _imageFile = File(path);
+        _imageFile = File(path!);
       });
 
-      await recognizeImage(File(path));
+      await recognizeImage(_imageFile!);
     } catch (e) {
-      print('Failed to download image: ' + e.toString());
+      print('Failed to download image: $e');
     }
   }
 
-  Future recognizeImage(File image) async {
+  Future<void> recognizeImage(File image) async {
     var recognitions = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 6,
@@ -87,19 +89,60 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
     });
   }
 
-  Future saveResult() async {
-    if (_recognitions == null) return;
+  Future<void> saveResult() async {
+    if (_recognitions == null || _imageFile == null) return;
 
-    final directory = await getApplicationDocumentsDirectory();
-    final resultsPath = '${directory.path}/results.txt';
-    final resultsFile = File(resultsPath);
-    String results = _recognitions!
-        .map((res) =>
-            "${res["index"]} - ${res["label"]}: ${res["confidence"].toStringAsFixed(3)}")
-        .join("\n");
-    await resultsFile.writeAsString(results);
+    try {
+      // Load the image to be drawn on
+      final originalImage = await _imageFile!.readAsBytes();
+      final codec = await ui.instantiateImageCodec(originalImage);
+      final frame = await codec.getNextFrame();
+      final image = frame.image;
 
-    Fluttertoast.showToast(msg: "Results saved!");
+      // Create a picture recorder to draw on
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder,
+          Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()));
+
+      // Draw the original image
+      canvas.drawImage(image, Offset.zero, Paint());
+
+      // Draw the recognition results
+      final textPainter = TextPainter(
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr, // Correct TextDirection
+      );
+
+      final textStyle = TextStyle(
+        color: Colors.red,
+        fontSize: 20,
+      );
+
+      final results = _recognitions!
+          .map((res) =>
+              "${res["index"]} - ${res["label"]}: ${res["confidence"].toStringAsFixed(3)}")
+          .join("\n");
+
+      textPainter.text = TextSpan(text: results, style: textStyle);
+      textPainter.layout(maxWidth: image.width.toDouble());
+      textPainter.paint(canvas, Offset(10, 10));
+
+      // Get the final image
+      final picture = recorder.endRecording();
+      final img = await picture.toImage(image.width, image.height);
+      final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
+      final pngBytes = byteData!.buffer.asUint8List();
+
+      // Save the final image
+      final directory = await getApplicationDocumentsDirectory();
+      final resultImagePath = "${directory.path}/result_image.png";
+      final resultImageFile = File(resultImagePath);
+      await resultImageFile.writeAsBytes(pngBytes);
+
+      Fluttertoast.showToast(msg: "Results image saved!");
+    } catch (e) {
+      print('Failed to save result image: $e');
+    }
   }
 
   @override
@@ -157,6 +200,3 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
     );
   }
 }
-
-// Set your widget name, define your parameter, and then add the
-// boilerplate code using the green button on the right!
