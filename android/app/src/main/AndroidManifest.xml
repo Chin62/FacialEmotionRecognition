@@ -47,7 +47,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="facialemotionrecognition" android:host="facialemotionrecognition.com" />
+                <data android:scheme="facialemotionrecognitionf" android:host="facialemotionrecognitionf.com" />
             </intent-filter>
 
         </activity>

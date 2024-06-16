@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
 
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
-    userStream = facialEmotionRecognitionFirebaseUserStream()
+    userStream = facialEmotionRecognitionFFirebaseUserStream()
       ..listen((user) {
         _appStateNotifier.update(user);
       });
@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Facial Emotion Recognition',
+      title: 'FacialEmotionRecognitionF',
       localizationsDelegates: const [
         FFLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,

@@ -1,4 +1,4 @@
-# Facial Emotion Recognition
+# FacialEmotionRecognitionF
 
 A new Flutter project.
 

@@ -5,8 +5,8 @@ import '../base_auth_user_provider.dart';
 
 export '../base_auth_user_provider.dart';
 
-class FacialEmotionRecognitionFirebaseUser extends BaseAuthUser {
-  FacialEmotionRecognitionFirebaseUser(this.user);
+class FacialEmotionRecognitionFFirebaseUser extends BaseAuthUser {
+  FacialEmotionRecognitionFFirebaseUser(this.user);
   User? user;
   @override
   bool get loggedIn => user != null;
@@ -55,10 +55,10 @@ class FacialEmotionRecognitionFirebaseUser extends BaseAuthUser {
   static BaseAuthUser fromUserCredential(UserCredential userCredential) =>
       fromFirebaseUser(userCredential.user);
   static BaseAuthUser fromFirebaseUser(User? user) =>
-      FacialEmotionRecognitionFirebaseUser(user);
+      FacialEmotionRecognitionFFirebaseUser(user);
 }
 
-Stream<BaseAuthUser> facialEmotionRecognitionFirebaseUserStream() =>
+Stream<BaseAuthUser> facialEmotionRecognitionFFirebaseUserStream() =>
     FirebaseAuth.instance
         .authStateChanges()
         .debounce((user) => user == null && !loggedIn
@@ -66,7 +66,7 @@ Stream<BaseAuthUser> facialEmotionRecognitionFirebaseUserStream() =>
             : Stream.value(user))
         .map<BaseAuthUser>(
       (user) {
-        currentUser = FacialEmotionRecognitionFirebaseUser(user);
+        currentUser = FacialEmotionRecognitionFFirebaseUser(user);
         return currentUser!;
       },
     );

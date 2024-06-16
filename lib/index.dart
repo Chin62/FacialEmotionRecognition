@@ -21,3 +21,4 @@ export '/tasks/completed_task/completed_task_widget.dart'
     show CompletedTaskWidget;
 export '/emotion_detection/emotion_detection_widget.dart'
     show EmotionDetectionWidget;
+export '/tasks/edit_task/edit_task_widget.dart' show EditTaskWidget;

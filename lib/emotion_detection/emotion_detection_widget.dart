@@ -79,159 +79,159 @@ class _EmotionDetectionWidgetState extends State<EmotionDetectionWidget> {
         ),
         body: SafeArea(
           top: true,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16.0, 20.0, 16.0, 20.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: AuthUserStreamWidget(
-                        builder: (context) => ClipRRect(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsetsDirectional.fromSTEB(16.0, 20.0, 16.0, 20.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
                             valueOrDefault<String>(
-                              valueOrDefault(currentUserDocument?.imageURL, ''),
-                              'https://media.istockphoto.com/id/827161338/vector/cartoon-children-avatar-set.jpg?s=612x612&w=0&k=20&c=qqf6lMDkC-ENSneeEcBC4EMwsgS30b1rBxDV_eH3ApM=',
+                              _model.uploadedFileUrl,
+                              'https://static.vecteezy.com/system/resources/thumbnails/007/001/887/small_2x/cute-little-girl-with-facial-expressions-set-of-kid-faces-with-different-emotions-such-as-happy-smiling-laughing-winking-sulking-surprised-shocked-angry-confused-and-worried-vector.jpg',
                             ),
                             width: 300.0,
-                            height: 200.0,
+                            height: 350.0,
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(16.0, 20.0, 16.0, 20.0),
-                child: Row(
+                Padding(
+                  padding:
+                      const EdgeInsetsDirectional.fromSTEB(16.0, 20.0, 16.0, 20.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      custom_widgets.ImageRecognitionWidget(
+                        width: 350.0,
+                        height: 200.0,
+                        imageURL: _model.uploadedFileUrl,
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      width: 350.0,
-                      height: 250.0,
-                      child: custom_widgets.ImageRecognitionWidget(
-                        width: 350.0,
-                        height: 250.0,
+                    FFButtonWidget(
+                      onPressed: () async {
+                        final selectedMedia =
+                            await selectMediaWithSourceBottomSheet(
+                          context: context,
+                          maxWidth: 300.00,
+                          maxHeight: 400.00,
+                          allowPhoto: true,
+                        );
+                        if (selectedMedia != null &&
+                            selectedMedia.every((m) =>
+                                validateFileFormat(m.storagePath, context))) {
+                          setState(() => _model.isDataUploading = true);
+                          var selectedUploadedFiles = <FFUploadedFile>[];
+
+                          var downloadUrls = <String>[];
+                          try {
+                            selectedUploadedFiles = selectedMedia
+                                .map((m) => FFUploadedFile(
+                                      name: m.storagePath.split('/').last,
+                                      bytes: m.bytes,
+                                      height: m.dimensions?.height,
+                                      width: m.dimensions?.width,
+                                      blurHash: m.blurHash,
+                                    ))
+                                .toList();
+
+                            downloadUrls = (await Future.wait(
+                              selectedMedia.map(
+                                (m) async =>
+                                    await uploadData(m.storagePath, m.bytes),
+                              ),
+                            ))
+                                .where((u) => u != null)
+                                .map((u) => u!)
+                                .toList();
+                          } finally {
+                            _model.isDataUploading = false;
+                          }
+                          if (selectedUploadedFiles.length ==
+                                  selectedMedia.length &&
+                              downloadUrls.length == selectedMedia.length) {
+                            setState(() {
+                              _model.uploadedLocalFile =
+                                  selectedUploadedFiles.first;
+                              _model.uploadedFileUrl = downloadUrls.first;
+                            });
+                          } else {
+                            setState(() {});
+                            return;
+                          }
+                        }
+
+                        if (_model.isDataUploading) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Uploading...',
+                                style: TextStyle(
+                                  color:
+                                      FlutterFlowTheme.of(context).primaryText,
+                                ),
+                              ),
+                              duration: const Duration(milliseconds: 4000),
+                              backgroundColor:
+                                  FlutterFlowTheme.of(context).secondary,
+                            ),
+                          );
+                        } else {
+                          await currentUserReference!
+                              .update(createUsersRecordData(
+                            imageUrl: _model.uploadedFileUrl,
+                          ));
+                        }
+                      },
+                      text: FFLocalizations.of(context).getText(
+                        '14rrose8' /* Camera / Gallery */,
+                      ),
+                      options: FFButtonOptions(
+                        height: 40.0,
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            24.0, 0.0, 24.0, 0.0),
+                        iconPadding:
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        color: FlutterFlowTheme.of(context).primary,
+                        textStyle:
+                            FlutterFlowTheme.of(context).titleSmall.override(
+                                  fontFamily: 'Manrope',
+                                  color: Colors.white,
+                                  letterSpacing: 0.0,
+                                ),
+                        elevation: 3.0,
+                        borderSide: const BorderSide(
+                          color: Colors.transparent,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                        hoverColor: FlutterFlowTheme.of(context).secondary,
                       ),
                     ),
                   ],
                 ),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FFButtonWidget(
-                    onPressed: () async {
-                      final selectedMedia =
-                          await selectMediaWithSourceBottomSheet(
-                        context: context,
-                        maxWidth: 300.00,
-                        maxHeight: 400.00,
-                        allowPhoto: true,
-                      );
-                      if (selectedMedia != null &&
-                          selectedMedia.every((m) =>
-                              validateFileFormat(m.storagePath, context))) {
-                        setState(() => _model.isDataUploading = true);
-                        var selectedUploadedFiles = <FFUploadedFile>[];
-
-                        var downloadUrls = <String>[];
-                        try {
-                          selectedUploadedFiles = selectedMedia
-                              .map((m) => FFUploadedFile(
-                                    name: m.storagePath.split('/').last,
-                                    bytes: m.bytes,
-                                    height: m.dimensions?.height,
-                                    width: m.dimensions?.width,
-                                    blurHash: m.blurHash,
-                                  ))
-                              .toList();
-
-                          downloadUrls = (await Future.wait(
-                            selectedMedia.map(
-                              (m) async =>
-                                  await uploadData(m.storagePath, m.bytes),
-                            ),
-                          ))
-                              .where((u) => u != null)
-                              .map((u) => u!)
-                              .toList();
-                        } finally {
-                          _model.isDataUploading = false;
-                        }
-                        if (selectedUploadedFiles.length ==
-                                selectedMedia.length &&
-                            downloadUrls.length == selectedMedia.length) {
-                          setState(() {
-                            _model.uploadedLocalFile =
-                                selectedUploadedFiles.first;
-                            _model.uploadedFileUrl = downloadUrls.first;
-                          });
-                        } else {
-                          setState(() {});
-                          return;
-                        }
-                      }
-
-                      if (_model.isDataUploading) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Uploading...',
-                              style: TextStyle(
-                                color: FlutterFlowTheme.of(context).primaryText,
-                              ),
-                            ),
-                            duration: const Duration(milliseconds: 4000),
-                            backgroundColor:
-                                FlutterFlowTheme.of(context).secondary,
-                          ),
-                        );
-                      } else {
-                        await currentUserReference!
-                            .update(createUsersRecordData(
-                          imageURL: _model.uploadedFileUrl,
-                        ));
-                      }
-                    },
-                    text: FFLocalizations.of(context).getText(
-                      '14rrose8' /* Camera / Gallery */,
-                    ),
-                    options: FFButtonOptions(
-                      height: 40.0,
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-                      iconPadding:
-                          const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      color: FlutterFlowTheme.of(context).primary,
-                      textStyle:
-                          FlutterFlowTheme.of(context).titleSmall.override(
-                                fontFamily: 'Manrope',
-                                color: Colors.white,
-                                letterSpacing: 0.0,
-                              ),
-                      elevation: 3.0,
-                      borderSide: const BorderSide(
-                        color: Colors.transparent,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                      hoverColor: FlutterFlowTheme.of(context).secondary,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

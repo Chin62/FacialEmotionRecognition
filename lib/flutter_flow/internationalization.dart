@@ -732,6 +732,29 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
   },
+  // EditTask
+  {
+    '53qzzm2p': {
+      'en': 'Task Details',
+      'zh_Hans': '',
+    },
+    '2akdhwsi': {
+      'en': 'Title',
+      'zh_Hans': '',
+    },
+    'brfcbvs8': {
+      'en': 'Details',
+      'zh_Hans': '',
+    },
+    'a5yxzpzq': {
+      'en': 'Update Task',
+      'zh_Hans': '',
+    },
+    'bootohcy': {
+      'en': 'Home',
+      'zh_Hans': '',
+    },
+  },
   // CreateTask
   {
     '6z7wwlnq': {

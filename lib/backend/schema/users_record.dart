@@ -45,10 +45,10 @@ class UsersRecord extends FirestoreRecord {
   String get displayName => _displayName ?? '';
   bool hasDisplayName() => _displayName != null;
 
-  // "imageURL" field.
-  String? _imageURL;
-  String get imageURL => _imageURL ?? '';
-  bool hasImageURL() => _imageURL != null;
+  // "image_url" field.
+  String? _imageUrl;
+  String get imageUrl => _imageUrl ?? '';
+  bool hasImageUrl() => _imageUrl != null;
 
   void _initializeFields() {
     _email = snapshotData['email'] as String?;
@@ -57,7 +57,7 @@ class UsersRecord extends FirestoreRecord {
     _createdTime = snapshotData['created_time'] as DateTime?;
     _phoneNumber = snapshotData['phone_number'] as String?;
     _displayName = snapshotData['display_name'] as String?;
-    _imageURL = snapshotData['imageURL'] as String?;
+    _imageUrl = snapshotData['image_url'] as String?;
   }
 
   static CollectionReference get collection =>
@@ -100,7 +100,7 @@ Map<String, dynamic> createUsersRecordData({
   DateTime? createdTime,
   String? phoneNumber,
   String? displayName,
-  String? imageURL,
+  String? imageUrl,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -110,7 +110,7 @@ Map<String, dynamic> createUsersRecordData({
       'created_time': createdTime,
       'phone_number': phoneNumber,
       'display_name': displayName,
-      'imageURL': imageURL,
+      'image_url': imageUrl,
     }.withoutNulls,
   );
 
@@ -128,7 +128,7 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e1?.createdTime == e2?.createdTime &&
         e1?.phoneNumber == e2?.phoneNumber &&
         e1?.displayName == e2?.displayName &&
-        e1?.imageURL == e2?.imageURL;
+        e1?.imageUrl == e2?.imageUrl;
   }
 
   @override
@@ -139,7 +139,7 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.createdTime,
         e?.phoneNumber,
         e?.displayName,
-        e?.imageURL
+        e?.imageUrl
       ]);
 
   @override

@@ -209,16 +209,25 @@ class _CompletedTaskWidgetState extends State<CompletedTaskWidget> {
                         itemBuilder: (context, listViewIndex) {
                           final listViewToDoTaskRecord =
                               listViewToDoTaskRecordList[listViewIndex];
-                          return TaskWidget(
-                            key: Key(
-                                'Keyloo_${listViewIndex}_of_${listViewToDoTaskRecordList.length}'),
-                            taskDoc: listViewToDoTaskRecord,
-                            checkAction: () async {
-                              await listViewToDoTaskRecord.reference
-                                  .update(createToDoTaskRecordData(
-                                completed: false,
-                              ));
+                          return InkWell(
+                            splashColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onLongPress: () async {
+                              await listViewToDoTaskRecord.reference.delete();
                             },
+                            child: TaskWidget(
+                              key: Key(
+                                  'Keyloo_${listViewIndex}_of_${listViewToDoTaskRecordList.length}'),
+                              taskDoc: listViewToDoTaskRecord,
+                              checkAction: () async {
+                                await listViewToDoTaskRecord.reference
+                                    .update(createToDoTaskRecordData(
+                                  completed: false,
+                                ));
+                              },
+                            ),
                           );
                         },
                       );

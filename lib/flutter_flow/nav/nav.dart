@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '/backend/backend.dart';
 
 import '/auth/base_auth_user_provider.dart';
 
@@ -168,6 +169,19 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: 'EmotionDetection',
           path: '/emotionDetection',
           builder: (context, params) => const EmotionDetectionWidget(),
+        ),
+        FFRoute(
+          name: 'EditTask',
+          path: '/editTask',
+          asyncParams: {
+            'taskDoc': getDoc(['ToDoTask'], ToDoTaskRecord.fromSnapshot),
+          },
+          builder: (context, params) => EditTaskWidget(
+            taskDoc: params.getParam(
+              'taskDoc',
+              ParamType.Document,
+            ),
+          ),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );

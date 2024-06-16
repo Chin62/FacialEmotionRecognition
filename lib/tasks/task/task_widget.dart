@@ -45,72 +45,62 @@ class _TaskWidgetState extends State<TaskWidget> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-      child: InkWell(
-        splashColor: Colors.transparent,
-        focusColor: Colors.transparent,
-        hoverColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onLongPress: () async {
-          // Delete Task
-          await widget.taskDoc!.reference.delete();
-        },
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: FlutterFlowTheme.of(context).secondaryBackground,
-            borderRadius: BorderRadius.circular(12.0),
-            shape: BoxShape.rectangle,
-            border: Border.all(
-              color: Colors.black,
-            ),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: FlutterFlowTheme.of(context).secondaryBackground,
+          borderRadius: BorderRadius.circular(12.0),
+          shape: BoxShape.rectangle,
+          border: Border.all(
+            color: Colors.black,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Theme(
-                  data: ThemeData(
-                    checkboxTheme: const CheckboxThemeData(
-                      visualDensity: VisualDensity.compact,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: CircleBorder(),
-                    ),
-                    unselectedWidgetColor:
-                        FlutterFlowTheme.of(context).secondaryText,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Theme(
+                data: ThemeData(
+                  checkboxTheme: const CheckboxThemeData(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: CircleBorder(),
                   ),
-                  child: Checkbox(
-                    value: _model.checkboxValue ??= widget.taskDoc!.completed,
-                    onChanged: (newValue) async {
-                      setState(() => _model.checkboxValue = newValue!);
-                      if (newValue!) {
-                        await widget.checkAction?.call();
-                      } else {
-                        await widget.checkAction?.call();
-                      }
-                    },
-                    side: BorderSide(
-                      width: 2,
-                      color: FlutterFlowTheme.of(context).secondaryText,
-                    ),
-                    activeColor: FlutterFlowTheme.of(context).primary,
-                    checkColor: FlutterFlowTheme.of(context).info,
-                  ),
+                  unselectedWidgetColor:
+                      FlutterFlowTheme.of(context).secondaryText,
                 ),
-                Flexible(
-                  child: Text(
-                    valueOrDefault<String>(
-                      widget.taskDoc?.title,
-                      'title',
-                    ),
-                    style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          fontFamily: 'Manrope',
-                          letterSpacing: 0.0,
-                        ),
+                child: Checkbox(
+                  value: _model.checkboxValue ??= widget.taskDoc!.completed,
+                  onChanged: (newValue) async {
+                    setState(() => _model.checkboxValue = newValue!);
+                    if (newValue!) {
+                      await widget.checkAction?.call();
+                    } else {
+                      await widget.checkAction?.call();
+                    }
+                  },
+                  side: BorderSide(
+                    width: 2,
+                    color: FlutterFlowTheme.of(context).secondaryText,
                   ),
+                  activeColor: FlutterFlowTheme.of(context).primary,
+                  checkColor: FlutterFlowTheme.of(context).info,
                 ),
-              ],
-            ),
+              ),
+              Flexible(
+                child: Text(
+                  valueOrDefault<String>(
+                    widget.taskDoc?.title,
+                    'title',
+                  ),
+                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                        fontFamily: 'Manrope',
+                        letterSpacing: 0.0,
+                      ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

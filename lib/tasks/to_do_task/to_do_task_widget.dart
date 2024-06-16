@@ -209,11 +209,36 @@ class _ToDoTaskWidgetState extends State<ToDoTaskWidget> {
                         itemBuilder: (context, listViewIndex) {
                           final listViewToDoTaskRecord =
                               listViewToDoTaskRecordList[listViewIndex];
-                          return TaskWidget(
-                            key: Key(
-                                'Keybif_${listViewIndex}_of_${listViewToDoTaskRecordList.length}'),
-                            taskDoc: listViewToDoTaskRecord,
-                            checkAction: () async {},
+                          return InkWell(
+                            splashColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              context.pushNamed(
+                                'EditTask',
+                                queryParameters: {
+                                  'taskDoc': serializeParam(
+                                    listViewToDoTaskRecord,
+                                    ParamType.Document,
+                                  ),
+                                }.withoutNulls,
+                                extra: <String, dynamic>{
+                                  'taskDoc': listViewToDoTaskRecord,
+                                },
+                              );
+                            },
+                            child: TaskWidget(
+                              key: Key(
+                                  'Keybif_${listViewIndex}_of_${listViewToDoTaskRecordList.length}'),
+                              taskDoc: listViewToDoTaskRecord,
+                              checkAction: () async {
+                                await listViewToDoTaskRecord.reference
+                                    .update(createToDoTaskRecordData(
+                                  completed: true,
+                                ));
+                              },
+                            ),
                           );
                         },
                       );

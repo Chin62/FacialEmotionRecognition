@@ -287,7 +287,7 @@ class FirebaseAuthManager extends AuthManager
       }
       return userCredential == null
           ? null
-          : FacialEmotionRecognitionFirebaseUser.fromUserCredential(
+          : FacialEmotionRecognitionFFirebaseUser.fromUserCredential(
               userCredential);
     } on FirebaseAuthException catch (e) {
       final errorMsg = switch (e.code) {
