@@ -8,11 +8,11 @@ export 'task_model.dart';
 class TaskWidget extends StatefulWidget {
   const TaskWidget({
     super.key,
-    required this.taskDoc,
+    required this.tasksDoc,
     required this.checkAction,
   });
 
-  final ToDoTaskRecord? taskDoc;
+  final ToDoTaskRecord? tasksDoc;
   final Future Function()? checkAction;
 
   @override
@@ -71,7 +71,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                       FlutterFlowTheme.of(context).secondaryText,
                 ),
                 child: Checkbox(
-                  value: _model.checkboxValue ??= widget.taskDoc!.completed,
+                  value: _model.checkboxValue ??= widget.tasksDoc!.completed,
                   onChanged: (newValue) async {
                     setState(() => _model.checkboxValue = newValue!);
                     if (newValue!) {
@@ -91,7 +91,7 @@ class _TaskWidgetState extends State<TaskWidget> {
               Flexible(
                 child: Text(
                   valueOrDefault<String>(
-                    widget.taskDoc?.title,
+                    widget.tasksDoc?.title,
                     'title',
                   ),
                   style: FlutterFlowTheme.of(context).bodyMedium.override(

@@ -172,17 +172,15 @@ class _ToDoTaskWidgetState extends State<ToDoTaskWidget> {
                 Expanded(
                   child: StreamBuilder<List<ToDoTaskRecord>>(
                     stream: queryToDoTaskRecord(
-                      queryBuilder: (toDoTaskRecord) =>
-                          toDoTaskRecord.where(Filter.or(
-                        Filter(
-                          'user',
-                          isEqualTo: currentUserReference,
-                        ),
-                        Filter(
-                          'completed',
-                          isEqualTo: false,
-                        ),
-                      )),
+                      queryBuilder: (toDoTaskRecord) => toDoTaskRecord
+                          .where(
+                            'user',
+                            isEqualTo: currentUserReference,
+                          )
+                          .where(
+                            'completed',
+                            isEqualTo: false,
+                          ),
                     ),
                     builder: (context, snapshot) {
                       // Customize what your widget looks like when it's loading.
@@ -231,7 +229,7 @@ class _ToDoTaskWidgetState extends State<ToDoTaskWidget> {
                             child: TaskWidget(
                               key: Key(
                                   'Keybif_${listViewIndex}_of_${listViewToDoTaskRecordList.length}'),
-                              taskDoc: listViewToDoTaskRecord,
+                              tasksDoc: listViewToDoTaskRecord,
                               checkAction: () async {
                                 await listViewToDoTaskRecord.reference
                                     .update(createToDoTaskRecordData(

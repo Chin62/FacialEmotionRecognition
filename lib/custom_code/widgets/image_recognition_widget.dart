@@ -9,11 +9,8 @@ import 'package:flutter/material.dart';
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui' as ui;
 
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_downloader/image_downloader.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:tflite/tflite.dart';
 
 class ImageRecognitionWidget extends StatefulWidget {
@@ -35,11 +32,11 @@ class ImageRecognitionWidget extends StatefulWidget {
 class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
   String? _imageURL;
   List? _recognitions;
-  File? _imageFile;
 
   @override
   void initState() {
     super.initState();
+
     _imageURL = widget.imageURL;
     loadModel();
     if (_imageURL != null && _imageURL != '') {
@@ -56,7 +53,7 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
       );
       print("Load model: " + res!);
     } catch (e) {
-      print('Failed to load model: $e');
+      print('Failed to load model: ' + e.toString());
     }
   }
 
@@ -70,10 +67,8 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
 
       String? path = await ImageDownloader.findPath(imageID);
       if (path != null) {
-        setState(() {
-          _imageFile = File(path);
-        });
-        await recognizeImage(_imageFile!);
+        print('Saved new image: ' + path!);
+        await recognizeImage(File(path));
       }
     } catch (e) {
       print('Failed to download image: $e');
@@ -85,7 +80,7 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
       var recognitions = await Tflite.runModelOnImage(
         path: image.path,
         numResults: 6,
-        threshold: 0.05,
+        threshold: 0.1,
         imageMean: 127.5,
         imageStd: 127.5,
       );
@@ -97,102 +92,27 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
     }
   }
 
-  Future<void> saveResult() async {
-    if (_recognitions == null || _imageFile == null) {
-      print("No image or recognitions to save.");
-      return;
-    }
-
-    try {
-      final originalImage = await _imageFile!.readAsBytes();
-      final codec = await ui.instantiateImageCodec(originalImage);
-      final frame = await codec.getNextFrame();
-      final image = frame.image;
-
-      final recorder = ui.PictureRecorder();
-      final canvas = Canvas(
-        recorder,
-        Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
-      );
-      canvas.drawImage(image, Offset.zero, Paint());
-
-      final textPainter = TextPainter(
-        textAlign: TextAlign.left,
-      );
-
-      final textStyle = TextStyle(color: Colors.red, fontSize: 20);
-      final results = _recognitions!
-          .map((res) =>
-              "${res["index"]} - ${res["label"]}: ${res["confidence"].toStringAsFixed(3)}")
-          .join("\n");
-
-      textPainter.text = TextSpan(text: results, style: textStyle);
-      textPainter.layout(maxWidth: image.width.toDouble());
-      textPainter.paint(canvas, Offset(10, 10));
-
-      final picture = recorder.endRecording();
-      final img = await picture.toImage(image.width, image.height);
-      final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
-      final pngBytes = byteData!.buffer.asUint8List();
-
-      final directory = await getApplicationDocumentsDirectory();
-      final resultImagePath = "${directory.path}/result_image.png";
-      final resultImageFile = File(resultImagePath);
-      await resultImageFile.writeAsBytes(pngBytes);
-
-      Fluttertoast.showToast(msg: "Results image saved to $resultImagePath");
-    } catch (e) {
-      print('Failed to save result image: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _imageFile != null
-            ? Image.file(
-                _imageFile!,
-                width: widget.width,
-                height: widget.height,
-              )
-            : Container(),
-        SizedBox(height: 20),
-        _recognitions != null
-            ? Expanded(
-                child: ListView.builder(
-                  itemCount: _recognitions!.length,
-                  itemBuilder: (context, index) {
-                    var res = _recognitions![index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(
-                          "${res["index"]} - ${res["label"]}",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                        subtitle: Text(
-                          "Confidence: ${res["confidence"].toStringAsFixed(3)}",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 16.0,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              )
-            : Container(),
-        SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () => saveResult(),
-          child: Text("Save Results"),
-        ),
-      ],
-    );
+    List<Widget> stackChildren = [];
+
+    stackChildren.add(Center(
+      child: Column(
+        children: _recognitions != null
+            ? _recognitions!.map((res) {
+                return Text(
+                  "${res["index"]} - ${res["label"]}: ${res["confidence"].toStringAsFixed(3)}",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.0,
+                    background: Paint()..color = Colors.white,
+                  ),
+                );
+              }).toList()
+            : [],
+      ),
+    ));
+
+    return Column(children: stackChildren);
   }
 }
