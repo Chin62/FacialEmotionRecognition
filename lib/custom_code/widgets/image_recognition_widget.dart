@@ -10,86 +10,77 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
 
-import 'package:image_downloader/image_downloader.dart';
 import 'package:tflite/tflite.dart';
+import 'package:image_downloader/image_downloader.dart';
 
 class ImageRecognitionWidget extends StatefulWidget {
   const ImageRecognitionWidget({
     Key? key,
     this.width,
     this.height,
-    this.imageURL,
+    this.imageUrl,
   }) : super(key: key);
 
   final double? width;
   final double? height;
-  final String? imageURL;
+  final String? imageUrl;
 
   @override
   ImageRecognitionWidgetState createState() => ImageRecognitionWidgetState();
 }
 
 class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
-  String? _imageURL;
+  String? _imageUrl;
   List? _recognitions;
 
-  @override
   void initState() {
     super.initState();
 
-    _imageURL = widget.imageURL;
+    _imageUrl = widget.imageUrl;
     loadModel();
-    if (_imageURL != null && _imageURL != '') {
+    if (_imageUrl != null && _imageUrl != '') {
       grabImage();
     }
   }
 
-  Future<void> loadModel() async {
+  Future loadModel() async {
     Tflite.close();
+
     try {
       String? res = await Tflite.loadModel(
-        model: "assets/fyp.tflite",
-        labels: "assets/labels.txt",
+        model: "assets/images/mobilenet_v1_1.0_224.tflite",
+        labels: "assets/images/labels.txt",
       );
-      print("Load model: " + res!);
+      print("Loaded model:" + res!);
     } catch (e) {
-      print('Failed to load model: ' + e.toString());
+      print('Failed to load model.' + e.toString());
     }
   }
 
-  Future<void> grabImage() async {
-    try {
-      String? imageID = await ImageDownloader.downloadImage(_imageURL!);
-      if (imageID == null) {
-        print("Failed to download image.");
-        return;
-      }
+  Future grabImage() async {
+    String? imageId = await ImageDownloader.downloadImage(_imageUrl!);
 
-      String? path = await ImageDownloader.findPath(imageID);
-      if (path != null) {
-        print('Saved new image: ' + path!);
-        await recognizeImage(File(path));
-      }
-    } catch (e) {
-      print('Failed to download image: $e');
+    if (imageId == null) {
+      return;
     }
+
+    String? path = await ImageDownloader.findPath(imageId);
+    print('saved new image:' + path!);
+
+    await recognizeImage(File(path));
   }
 
-  Future<void> recognizeImage(File image) async {
-    try {
-      var recognitions = await Tflite.runModelOnImage(
-        path: image.path,
-        numResults: 6,
-        threshold: 0.1,
-        imageMean: 127.5,
-        imageStd: 127.5,
-      );
-      setState(() {
-        _recognitions = recognitions;
-      });
-    } catch (e) {
-      print('Failed to recognize image: $e');
-    }
+  Future recognizeImage(File image) async {
+    var recognitions = await Tflite.runModelOnImage(
+      path: image.path,
+      numResults: 6,
+      threshold: 0.05,
+      imageMean: 127.5,
+      imageStd: 127.5,
+    );
+    setState(() {
+      _recognitions = recognitions;
+    });
   }
 
   @override
