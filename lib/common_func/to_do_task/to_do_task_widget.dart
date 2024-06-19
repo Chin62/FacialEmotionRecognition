@@ -1,30 +1,30 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/common_func/create_task/create_task_widget.dart';
+import '/common_func/task/task_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/tasks/create_task/create_task_widget.dart';
-import '/tasks/task/task_widget.dart';
 import 'package:flutter/material.dart';
-import 'completed_task_model.dart';
-export 'completed_task_model.dart';
+import 'to_do_task_model.dart';
+export 'to_do_task_model.dart';
 
-class CompletedTaskWidget extends StatefulWidget {
-  const CompletedTaskWidget({super.key});
+class ToDoTaskWidget extends StatefulWidget {
+  const ToDoTaskWidget({super.key});
 
   @override
-  State<CompletedTaskWidget> createState() => _CompletedTaskWidgetState();
+  State<ToDoTaskWidget> createState() => _ToDoTaskWidgetState();
 }
 
-class _CompletedTaskWidgetState extends State<CompletedTaskWidget> {
-  late CompletedTaskModel _model;
+class _ToDoTaskWidgetState extends State<ToDoTaskWidget> {
+  late ToDoTaskModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    _model = createModel(context, () => CompletedTaskModel());
+    _model = createModel(context, () => ToDoTaskModel());
   }
 
   @override
@@ -101,7 +101,7 @@ class _CompletedTaskWidgetState extends State<CompletedTaskWidget> {
           ),
           title: Text(
             FFLocalizations.of(context).getText(
-              'ho9bvk8b' /* Completed Task */,
+              'lmu9ng2d' /* To-Do Task */,
             ),
             style: FlutterFlowTheme.of(context).headlineMedium.override(
                   fontFamily: 'Urbanist',
@@ -151,7 +151,7 @@ class _CompletedTaskWidgetState extends State<CompletedTaskWidget> {
                           alignment: const AlignmentDirectional(0.0, 0.0),
                           child: Text(
                             FFLocalizations.of(context).getText(
-                              '9xlknrx3' /* Better Face  */,
+                              '1qllr1rs' /* Better Face  */,
                             ),
                             textAlign: TextAlign.center,
                             style: FlutterFlowTheme.of(context)
@@ -179,7 +179,7 @@ class _CompletedTaskWidgetState extends State<CompletedTaskWidget> {
                           )
                           .where(
                             'completed',
-                            isEqualTo: true,
+                            isEqualTo: false,
                           ),
                     ),
                     builder: (context, snapshot) {
@@ -212,17 +212,28 @@ class _CompletedTaskWidgetState extends State<CompletedTaskWidget> {
                             focusColor: Colors.transparent,
                             hoverColor: Colors.transparent,
                             highlightColor: Colors.transparent,
-                            onLongPress: () async {
-                              await listViewToDoTaskRecord.reference.delete();
+                            onTap: () async {
+                              context.pushNamed(
+                                'EditTask',
+                                queryParameters: {
+                                  'taskDoc': serializeParam(
+                                    listViewToDoTaskRecord,
+                                    ParamType.Document,
+                                  ),
+                                }.withoutNulls,
+                                extra: <String, dynamic>{
+                                  'taskDoc': listViewToDoTaskRecord,
+                                },
+                              );
                             },
                             child: TaskWidget(
                               key: Key(
-                                  'Keyloo_${listViewIndex}_of_${listViewToDoTaskRecordList.length}'),
+                                  'Keybif_${listViewIndex}_of_${listViewToDoTaskRecordList.length}'),
                               tasksDoc: listViewToDoTaskRecord,
                               checkAction: () async {
                                 await listViewToDoTaskRecord.reference
                                     .update(createToDoTaskRecordData(
-                                  completed: false,
+                                  completed: true,
                                 ));
                               },
                             ),

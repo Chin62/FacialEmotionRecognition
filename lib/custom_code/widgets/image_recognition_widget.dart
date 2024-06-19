@@ -48,8 +48,8 @@ class ImageRecognitionWidgetState extends State<ImageRecognitionWidget> {
 
     try {
       String? res = await Tflite.loadModel(
-        model: "assets/images/mobilenet_v1_1.0_224.tflite",
-        labels: "assets/images/labels.txt",
+        model: "assets/fyp.tflite",
+        labels: "assets/labels.txt",
       );
       print("Loaded model:" + res!);
     } catch (e) {
